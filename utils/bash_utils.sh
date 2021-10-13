@@ -19,22 +19,6 @@ TIMER_ROUTINE_DIR=$SPL_PROGRAMS_DIR/sample_timer.spl
 TIMER_ROUTINE_DIR_XSM=$SPL_PROGRAMS_DIR/sample_timer.xsm
 INT7_ROUTINE_DIR=$SPL_PROGRAMS_DIR/INT7.spl
 INT7_ROUTINE_DIR_XSM=$SPL_PROGRAMS_DIR/INT7.xsm
-# Menu de opciones:
-#   Ejecutar la maquina xsm
-#   Compilar y cargar OS
-#   Compilar y cargar un proceso de usuario
-#   Compilar y cargar rutinas
-#   Programa de carga completo
-#   Compilar programa SPL
-#   Interfaz xfs
-#   Salir
-
-
-# Programa de carga completo:
-#   compilar y cargar el OS
-#   compilar y cargar las rutinas del OS (timer, except, etc)
-#   compilar y cargar el programa de usuario definido por parametro
-#   los valores para los directios y archivos seran definidos por variable de entorno
 
 function run_xsm_machine()
 {
@@ -66,7 +50,6 @@ function xsm_machine_menu()
 
 function compile_and_load_os()
 {
-    clear
     cd $MYEXPOS_PATH/spl/
     echo ""
     echo "Compiling ${OS_PATH_SPL}..."
@@ -77,12 +60,12 @@ function compile_and_load_os()
     cd $XFS_INTERFACE_PATH
     ./xfs-interface load --os $OS_PATH_XSM
     echo "OS loaded from: ${OS_PATH_XSM}."
+    echo ""
 }
 
 function compile_spl_program()
 {
     $FILENAME
-    clear
     cd $MYEXPOS_PATH/spl
     echo ""
     read -p "Enter the filename of the program to be compiled: " FILENAME
@@ -102,13 +85,12 @@ function compile_spl_program()
 function load_expl_program()
 {
     $FILENAME
-    clear
     cd $XFS_INTERFACE_PATH
     echo ""
     read -p "Enter the filename of the program to be loaded: " FILENAME
     echo ""
     if [ -f "${EXPL_PROGRAMS_DIR}/${FILENAME}" ]; then
-        ./xfs-interface load --init ${EXPL_PROGRAMS_DIR}/${FILENAME}
+        ./xfs-interface "load --init ${EXPL_PROGRAMS_DIR}/${FILENAME}"
         if [[ $? -eq 0 ]]; then
             echo "File ${EXPL_PROGRAMS_DIR}/${FILENAME} loaded succesfully."
         else
@@ -143,7 +125,6 @@ function compile_and_load_routine()
 
 function compile_and_load_routines()
 {
-    clear
     echo ""
     compile_and_load_routine $HALT_ROUTINE_DIR "halt routine" "load --int=10 ${HALT_ROUTINE_DIR_XSM}"
     compile_and_load_routine $EXHANDLER_ROUTINE_DIR "exhandler routine" "load --exhandler ${EXHANDLER_ROUTINE_DIR_XSM}"
@@ -169,11 +150,10 @@ function main_menu()
 {
     $OPTION
     clear
-    echo "-----------------------------------------------------"
-    echo "                eXpOS NITC main shell"
-    echo "                      Version ${VERSION}"
-    echo ""
-    echo "-----------------------------------------------------"
+    echo " -----------------------------------------------------"
+    echo "|               eXpOS NITC main shell                 |"
+    echo "|                     Version ${VERSION}                     |"
+    echo " -----------------------------------------------------"
     echo "1. Run XSM machine"
     echo "2. Compile and load OS"
     echo "3. Compile and load a program (expl)"
@@ -181,6 +161,7 @@ function main_menu()
     echo "5. Load everything."
     echo "6. Compile SPL program."
     echo "7. XFS interface."
+    echo ""
     echo "Anything else will end the program."
     echo ""
     read -p "Choose your option: " OPTION
