@@ -82,19 +82,24 @@ function compile_spl_program()
     fi
 }
 
-function load_expl_program()
+function compile_and_load_expl_program()
 {
+#        ./xfs-interface "load --init ${EXPL_PROGRAMS_DIR}/${FILENAME}"
     $FILENAME
-    cd $XFS_INTERFACE_PATH
+    cd $MYEXPOS_PATH/expl
     echo ""
     read -p "Enter the filename of the program to be loaded: " FILENAME
     echo ""
     if [ -f "${EXPL_PROGRAMS_DIR}/${FILENAME}" ]; then
-        ./xfs-interface "load --init ${EXPL_PROGRAMS_DIR}/${FILENAME}"
+        ./expl ${EXPL_PROGRAMS_DIR}/${FILENAME}
         if [[ $? -eq 0 ]]; then
-            echo "File ${EXPL_PROGRAMS_DIR}/${FILENAME} loaded succesfully."
+            echo "File ${EXPL_PROGRAMS_DIR}/${FILENAME} compiled succesfully."
+            echo "Loading file..."
+            cd $XFS_INTERFACE_PATH
+            ./xfs-interface "load --init ${EXPL_PROGRAMS_DIR}/${FILENAME}"
+            echo "File ${EXPL_PROGRAMS_DIR}/${FILENAME} loaded."
         else
-            echo "An error occured during the loading process."
+            echo "An error occured during the compilation process."
         fi
     else
         echo "The file: ${EXPL_PROGRAMS_DIR}/${FILENAME} does not exists"
@@ -156,7 +161,7 @@ function main_menu()
     echo " -----------------------------------------------------"
     echo "1. Run XSM machine"
     echo "2. Compile and load OS"
-    echo "3. Compile and load a program (expl)"
+    echo "3. Compile and load a expl program"
     echo "4. Compile and load routines"
     echo "5. Load everything."
     echo "6. Compile SPL program."
@@ -170,7 +175,7 @@ function main_menu()
     elif [[ OPTION -eq 2 ]]; then
         compile_and_load_os
     elif [[ OPTION -eq 3 ]]; then
-        load_expl_program
+        compile_and_load_expl_program
     elif [[ OPTION -eq 4 ]]; then
         compile_and_load_routines
     elif [[ OPTION -eq 5 ]]; then
