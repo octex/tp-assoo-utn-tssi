@@ -1,24 +1,27 @@
-VERSION=0.1
+function show_config()
+{
+    echo ""
+    echo "Internal"
+    echo "-------------------"
+    echo "Project dir: ${MYEXPOS_PATH}"
+    echo "XFS interface: ${XFS_INTERFACE_PATH}"
+    echo "EXPL programs: ${EXPL_PROGRAMS_DIR}"
+    echo "SPL programs: ${SPL_PROGRAMS_DIR}"
+    echo ""
+    echo "OS"
+    echo "-------------------"
+    echo "SPL OS program: ${OS_PATH_SPL}"
+    echo ""
+    echo "Routines"
+    echo "-------------------"
+    echo "Halt routine program: ${HALT_ROUTINE_DIR}"
+    echo "Exhandler routine program: ${EXHANDLER_ROUTINE_DIR}"
+    echo "Timer routine program: ${TIMER_ROUTINE_DIR}"
+    echo "INT7 routine program: ${INT7_ROUTINE_DIR}"
+    echo ""
+    echo "For any modification check the config file variables."
+}
 
-# Base dirs
-MYEXPOS_PATH=$HOME/myexpos
-XFS_INTERFACE_PATH=$MYEXPOS_PATH/xfs-interface
-EXPL_PROGRAMS_DIR=$MYEXPOS_PATH/expl/expl_progs
-SPL_PROGRAMS_DIR=$MYEXPOS_PATH/spl/spl_progs
-
-# OS
-OS_PATH_SPL=$SPL_PROGRAMS_DIR/os_startup.spl
-OS_PATH_XSM=$SPL_PROGRAMS_DIR/os_startup.xsm
-
-# Routines
-HALT_ROUTINE_DIR=$SPL_PROGRAMS_DIR/haltprog.spl
-HALT_ROUTINE_DIR_XSM=$SPL_PROGRAMS_DIR/haltprog.xsm
-EXHANDLER_ROUTINE_DIR=$SPL_PROGRAMS_DIR/haltprog.spl
-EXHANDLER_ROUTINE_DIR_XSM=$SPL_PROGRAMS_DIR/haltprog.xsm
-TIMER_ROUTINE_DIR=$SPL_PROGRAMS_DIR/sample_timer.spl
-TIMER_ROUTINE_DIR_XSM=$SPL_PROGRAMS_DIR/sample_timer.xsm
-INT7_ROUTINE_DIR=$SPL_PROGRAMS_DIR/INT7.spl
-INT7_ROUTINE_DIR_XSM=$SPL_PROGRAMS_DIR/INT7.xsm
 
 function run_xsm_machine()
 {
@@ -26,7 +29,7 @@ function run_xsm_machine()
     TIMER_AMOUNT=$2
     clear
     cd $MYEXPOS_PATH/xsm/
-    if (($DEBUG_MODE == true)); then
+    if [[ $DEBUG_MODE == true ]]; then
         ./xsm --debug --timer $TIMER_AMOUNT
     else
         ./xsm --timer $TIMER_AMOUNT
@@ -41,10 +44,12 @@ function xsm_machine_menu()
     echo ""
     read -p "Do you want to run in debug mode? (y/n): " XSM_DEBUG
     read -p "Please put the timer amount (0 for turning it off): " XSM_TIMER
-    if [[XSM_DEBUG == 'y']]; then
+    if [[ "$XSM_DEBUG" == "y" ]]; then
+        XSM_DEBUG=''
         run_xsm_machine true $XSM_TIMER
     else
-        run_xsm_machine true $XSM_TIMER
+        XSM_DEBUG=''
+        run_xsm_machine false $XSM_TIMER
     fi
 }
 
@@ -54,13 +59,19 @@ function compile_and_load_os()
     echo ""
     echo "Compiling ${OS_PATH_SPL}..."
     ./spl $OS_PATH_SPL
-    echo "Compilation succesfull."
-    echo ""
-    echo "Loading OS in XSM machine..."
-    cd $XFS_INTERFACE_PATH
-    ./xfs-interface load --os $OS_PATH_XSM
-    echo "OS loaded from: ${OS_PATH_XSM}."
-    echo ""
+    if [[ $? -eq 0 ]]; then
+        echo "Compilation succesfull."
+        echo ""
+        echo "Loading OS in XSM machine..."
+        cd $XFS_INTERFACE_PATH
+        ./xfs-interface load --os $OS_PATH_XSM
+        echo "OS loaded from: ${OS_PATH_XSM}"
+        echo ""
+    else
+        echo "An error occured during the compilation process."
+        echo "Loading process aborted."
+        echo ""
+    fi
 }
 
 function compile_spl_program()
@@ -75,7 +86,7 @@ function compile_spl_program()
         if [[ $? -eq 0 ]]; then
             echo "File ${SPL_PROGRAMS_DIR}/${FILENAME} compiled succesfully."
         else
-            echo "An error occured during the compiling process."
+            echo "An error occured during the compilation process."
         fi
     else
         echo "The file: ${SPL_PROGRAMS_DIR}/${FILENAME} does not exists"
@@ -84,7 +95,6 @@ function compile_spl_program()
 
 function compile_and_load_expl_program()
 {
-#        ./xfs-interface "load --init ${EXPL_PROGRAMS_DIR}/${FILENAME}"
     $FILENAME
     cd $MYEXPOS_PATH/expl
     echo ""
@@ -140,53 +150,41 @@ function compile_and_load_routines()
 }
 
 
+function load_xfs_interface()
+{
+    clear
+    cd $XFS_INTERFACE_PATH
+    ./xfs-interface
+}
+
+
 function full_load()
 {
     clear
+    echo ""
+    echo " This function will load:"
+    echo "    - OS"
+    echo "    - System routines"
+    echo "    - Custom user program"
+    echo ""
+    read -p "Press any key to procced..."
     echo "------------------------ OS ------------------------"
     compile_and_load_os
     echo "------------------------ ROUTINES ------------------------"
     compile_and_load_routines
     echo "------------------------ USER PROGRAM ------------------------"
-    load_expl_program
+    compile_and_load_expl_program
 }
 
-function main_menu()
+function return_to_menu()
 {
-    $OPTION
-    clear
-    echo " -----------------------------------------------------"
-    echo "|               eXpOS NITC main shell                 |"
-    echo "|                     Version ${VERSION}                     |"
-    echo " -----------------------------------------------------"
-    echo "1. Run XSM machine"
-    echo "2. Compile and load OS"
-    echo "3. Compile and load a expl program"
-    echo "4. Compile and load routines"
-    echo "5. Load everything."
-    echo "6. Compile SPL program."
-    echo "7. XFS interface."
-    echo ""
-    echo "Anything else will end the program."
-    echo ""
-    read -p "Choose your option: " OPTION
-    if [[ OPTION -eq 1 ]]; then
-        xsm_machine_menu
-    elif [[ OPTION -eq 2 ]]; then
-        compile_and_load_os
-    elif [[ OPTION -eq 3 ]]; then
-        compile_and_load_expl_program
-    elif [[ OPTION -eq 4 ]]; then
-        compile_and_load_routines
-    elif [[ OPTION -eq 5 ]]; then
-        full_load
-    elif [[ OPTION -eq 6 ]]; then
-        compile_spl_program
-    elif [[ OPTION -eq 7 ]]; then
-        clear
-        cd $XFS_INTERFACE_PATH
-        ./xfs-interface
+    $BACK_MENU
+    read -p "Do you want to go back to main menu? (y/n): " BACKMENU
+    if [[ "$BACKMENU" == "y" ]]; then
+        main_menu
+    else
+        echo "Bye then."
     fi
 }
 
-main_menu
+
