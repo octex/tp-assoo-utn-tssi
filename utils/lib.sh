@@ -19,7 +19,7 @@ function show_config()
     echo "Timer routine program: ${TIMER_ROUTINE_DIR}"
     echo "INT7 routine program: ${INT7_ROUTINE_DIR}"
     echo ""
-    echo "For any modification check the config file variables."
+    echo "For any modification check the config file variables: config.sh"
 }
 
 
