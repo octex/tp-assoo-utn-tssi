@@ -191,6 +191,7 @@ function load_xsm_program_from_spl()
     $FILENAME
     cd $SPL_PROGRAMS_DIR
     clear
+    echo ""
     ls -l | grep .xsm
     echo ""
     read -p "Enter the filename of the program to be loaded: " FILENAME
