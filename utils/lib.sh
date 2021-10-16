@@ -1,25 +1,30 @@
 function show_config()
 {
+    clear
     echo ""
-    echo "Internal"
-    echo "-------------------"
+    echo "           ------------------"
+    echo "          |     Internal     |"
+    echo "           ------------------"
     echo "Project dir: ${MYEXPOS_PATH}"
     echo "XFS interface: ${XFS_INTERFACE_PATH}"
     echo "EXPL programs: ${EXPL_PROGRAMS_DIR}"
     echo "SPL programs: ${SPL_PROGRAMS_DIR}"
     echo ""
-    echo "OS"
-    echo "-------------------"
+    echo "           ------------------"
+    echo "          |        OS        |"
+    echo "           ------------------"
     echo "SPL OS program: ${OS_PATH_SPL}"
     echo ""
-    echo "Routines"
-    echo "-------------------"
+    echo "           ------------------"
+    echo "          |     Routines     |"
+    echo "           ------------------"
     echo "Halt routine program: ${HALT_ROUTINE_DIR}"
     echo "Exhandler routine program: ${EXHANDLER_ROUTINE_DIR}"
     echo "Timer routine program: ${TIMER_ROUTINE_DIR}"
     echo "INT7 routine program: ${INT7_ROUTINE_DIR}"
     echo ""
     echo "For any modification check the config file variables: config.sh"
+    echo ""
 }
 
 
@@ -78,6 +83,9 @@ function compile_spl_program()
 {
     $FILENAME
     cd $MYEXPOS_PATH/spl
+    clear
+    echo ""
+    ls ${SPL_PROGRAMS_DIR} -l | grep .spl
     echo ""
     read -p "Enter the filename of the program to be compiled: " FILENAME
     echo ""
@@ -97,6 +105,9 @@ function compile_and_load_expl_program()
 {
     $FILENAME
     cd $MYEXPOS_PATH/expl
+    clear
+    echo ""
+    ls ${EXPL_PROGRAMS_DIR} -l | grep .expl
     echo ""
     read -p "Enter the filename of the program to be loaded: " FILENAME
     echo ""
@@ -145,7 +156,6 @@ function compile_and_load_routines()
     compile_and_load_routine $EXHANDLER_ROUTINE_DIR "exhandler routine" "load --exhandler ${EXHANDLER_ROUTINE_DIR_XSM}"
     compile_and_load_routine $TIMER_ROUTINE_DIR "timer routine" "load --int=timer ${TIMER_ROUTINE_DIR_XSM}"
     compile_and_load_routine $INT7_ROUTINE_DIR "int7 routine" "load --int=7 ${INT7_ROUTINE_DIR_XSM}"
-    echo "All routines compiled and loaded."
     echo ""
 }
 
@@ -165,7 +175,7 @@ function full_load()
     echo " This function will load:"
     echo "    - OS"
     echo "    - System routines"
-    echo "    - Custom user program"
+    echo "    - Custom user program (expl)"
     echo ""
     read -p "Press any key to procced..."
     echo "------------------------ OS ------------------------"
@@ -180,6 +190,8 @@ function load_xsm_program_from_spl()
 {
     $FILENAME
     cd $SPL_PROGRAMS_DIR
+    clear
+    ls -l | grep .xsm
     echo ""
     read -p "Enter the filename of the program to be loaded: " FILENAME
     echo ""
@@ -198,6 +210,8 @@ function load_xsm_program_from_expl()
 {
     $FILENAME
     cd $EXPL_PROGRAMS_DIR
+    clear
+    ls -l | grep .xsm
     echo ""
     read -p "Enter the filename of the program to be loaded: " FILENAME
     echo ""
@@ -225,7 +239,7 @@ function return_to_menu()
 
 function get_logo()
 {
-    echo "            _______________"
+    echo "            ________________"
     echo "           |\     ####      \\"
     echo "           | \    #    #     \\"
     echo "           |  \    #    #     \\"
