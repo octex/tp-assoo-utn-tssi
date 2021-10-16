@@ -176,6 +176,41 @@ function full_load()
     compile_and_load_expl_program
 }
 
+function load_xsm_program_from_spl()
+{
+    $FILENAME
+    cd $SPL_PROGRAMS_DIR
+    echo ""
+    read -p "Enter the filename of the program to be loaded: " FILENAME
+    echo ""
+    if [ -f "${SPL_PROGRAMS_DIR}/${FILENAME}" ]; then
+        echo "Loading file..."
+        cd $XFS_INTERFACE_PATH
+        ./xfs-interface "load --init ${SPL_PROGRAMS_DIR}/${FILENAME}"
+        echo "File ${SPL_PROGRAMS_DIR}/${FILENAME} loaded."
+    else
+        echo "The file: ${SPL_PROGRAMS_DIR}/${FILENAME} does not exists"
+    fi
+}
+
+
+function load_xsm_program_from_expl()
+{
+    $FILENAME
+    cd $EXPL_PROGRAMS_DIR
+    echo ""
+    read -p "Enter the filename of the program to be loaded: " FILENAME
+    echo ""
+    if [ -f "${EXPL_PROGRAMS_DIR}/${FILENAME}" ]; then
+        echo "Loading file..."
+        cd $XFS_INTERFACE_PATH
+        ./xfs-interface "load --init ${EXPL_PROGRAMS_DIR}/${FILENAME}"
+        echo "File ${EXPL_PROGRAMS_DIR}/${FILENAME} loaded."
+    else
+        echo "The file: ${EXPL_PROGRAMS_DIR}/${FILENAME} does not exists"
+    fi
+}
+
 function return_to_menu()
 {
     $BACK_MENU
@@ -188,3 +223,20 @@ function return_to_menu()
 }
 
 
+function get_logo()
+{
+    echo "            _______________"
+    echo "           |\     ####      \\"
+    echo "           | \    #    #     \\"
+    echo "           |  \    #    #     \\"
+    echo "           |   \    #####      \\"
+    echo "           |#   \_______________\\"
+    echo "           |#  #|               |"
+    echo "           | #  |               |"
+    echo "           |# # |    ########   |"
+    echo "           |  # |    #          |"
+    echo "            \   |    ########   |"
+    echo "             \  |           #   |"
+    echo "              \ |    ########   |"
+    echo "               \|_______________|"
+}

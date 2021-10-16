@@ -8,6 +8,7 @@ function main_menu()
 {
     $OPTION
     clear
+    get_logo
     echo " -----------------------------------------------------"
     echo "|               eXpOS NITC custom shell               |"
     echo "|                     Version ${VERSION}                     |"
@@ -21,7 +22,9 @@ function main_menu()
     echo "5. Load everything"
     echo "6. Compile SPL program"
     echo "7. XFS interface"
-    echo "8. Show current config"
+    echo "8. Load a compiled xsm program (from: expl programs dir)"
+    echo "9. Load a compiled xsm program (from: spl programs dir)"
+    echo "10. Show current config"
     echo ""
     echo "Anything else will end the program."
     echo ""
@@ -48,6 +51,12 @@ function main_menu()
         load_xfs_interface
         return_to_menu
     elif [[ OPTION -eq 8 ]]; then
+        load_xsm_program_from_expl
+        return_to_menu
+    elif [[ OPTION -eq 9 ]]; then
+        load_xsm_program_from_spl
+        return_to_menu
+    elif [[ OPTION -eq 10 ]]; then
         show_config
         return_to_menu
     fi
