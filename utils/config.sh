@@ -1,4 +1,4 @@
-VERSION=0.4
+VERSION=0.5
 
 # Base dirs
 MYEXPOS_PATH=$HOME/myexpos
