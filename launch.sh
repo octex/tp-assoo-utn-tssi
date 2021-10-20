@@ -21,10 +21,11 @@ function main_menu()
     echo "4. Compile and load routines"
     echo "5. Load everything"
     echo "6. Compile SPL program"
-    echo "7. XFS interface"
-    echo "8. Load a compiled xsm program (from: expl programs dir)"
-    echo "9. Load a compiled xsm program (from: spl programs dir)"
-    echo "10. Show current config"
+    echo "7. Compile EXPL program"
+    echo "8. XFS interface"
+    echo "9. Load a compiled xsm program (from: expl programs dir)"
+    echo "10. Load a compiled xsm program (from: spl programs dir)"
+    echo "11. Show current config"
     echo ""
     echo "Anything else will end the program."
     echo ""
@@ -48,15 +49,18 @@ function main_menu()
         compile_spl_program
         return_to_menu
     elif [[ OPTION -eq 7 ]]; then
-        load_xfs_interface
+        compile_expl_program
         return_to_menu
     elif [[ OPTION -eq 8 ]]; then
-        load_xsm_program_from_expl
+        load_xfs_interface
         return_to_menu
     elif [[ OPTION -eq 9 ]]; then
-        load_xsm_program_from_spl
+        load_xsm_program_from_expl
         return_to_menu
     elif [[ OPTION -eq 10 ]]; then
+        load_xsm_program_from_spl
+        return_to_menu
+    elif [[ OPTION -eq 11 ]]; then
         show_config
         return_to_menu
     fi

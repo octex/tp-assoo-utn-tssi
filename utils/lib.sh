@@ -6,24 +6,36 @@ function show_config()
     echo "          |     Internal     |"
     echo "           ------------------"
     echo "Project dir: ${MYEXPOS_PATH}"
+    echo ""
     echo "XFS interface: ${XFS_INTERFACE_PATH}"
+    echo ""
     echo "EXPL programs: ${EXPL_PROGRAMS_DIR}"
+    echo ""
     echo "SPL programs: ${SPL_PROGRAMS_DIR}"
+    echo ""
     echo ""
     echo "           ------------------"
     echo "          |        OS        |"
     echo "           ------------------"
     echo "SPL OS program: ${OS_PATH_SPL}"
     echo ""
+    echo ""
     echo "           ------------------"
     echo "          |     Routines     |"
     echo "           ------------------"
     echo "Halt routine program: ${HALT_ROUTINE_DIR}"
+    echo ""
     echo "Exhandler routine program: ${EXHANDLER_ROUTINE_DIR}"
+    echo ""
     echo "Timer routine program: ${TIMER_ROUTINE_DIR}"
+    echo ""
     echo "INT7 routine program: ${INT7_ROUTINE_DIR}"
     echo ""
+    echo "Idle routine program: ${IDLE_ROUTINE_DIR}"
+    echo ""
+    echo ""
     echo "For any modification check the config file variables: config.sh"
+    echo ""
     echo ""
 }
 
@@ -99,6 +111,31 @@ function compile_spl_program()
     else
         echo "The file: ${SPL_PROGRAMS_DIR}/${FILENAME} does not exists"
     fi
+    echo ""
+}
+
+
+function compile_expl_program()
+{
+    $FILENAME
+    cd $MYEXPOS_PATH/expl
+    clear
+    echo ""
+    ls ${EXPL_PROGRAMS_DIR} -l | grep .expl
+    echo ""
+    read -p "Enter the filename of the program to be compiled: " FILENAME
+    echo ""
+    if [ -f "${EXPL_PROGRAMS_DIR}/${FILENAME}" ]; then
+        ./expl ${EXPL_PROGRAMS_DIR}/${FILENAME}
+        if [[ $? -eq 0 ]]; then
+            echo "File ${EXPL_PROGRAMS_DIR}/${FILENAME} compiled succesfully."
+        else
+            echo "An error occured during the compilation process."
+        fi
+    else
+        echo "The file: ${EXPL_PROGRAMS_DIR}/${FILENAME} does not exists"
+    fi
+    echo ""
 }
 
 function compile_and_load_expl_program()
@@ -125,6 +162,29 @@ function compile_and_load_expl_program()
     else
         echo "The file: ${EXPL_PROGRAMS_DIR}/${FILENAME} does not exists"
     fi
+    echo ""
+}
+
+
+function compile_and_load_routine_expl()
+{
+    ROUTINE=$1
+    ROUTINE_NAME=$2
+    CMD=$3
+    cd $MYEXPOS_PATH/expl
+    echo ""
+    echo "Compiling ${ROUTINE_NAME}..."
+    echo ""
+    ./expl $ROUTINE
+    if [[ $? -eq 0 ]]; then
+        echo "Compilation sucessfull. Loading ${ROUTING_NAME}..."
+        cd $XFS_INTERFACE_PATH
+        ./xfs-interface $CMD
+        echo "Loading process complete."
+    else
+        echo "Failed to compile ${ROUTINE_NAME}. Loading process aborted."
+    fi
+    echo ""
 }
 
 
@@ -146,6 +206,7 @@ function compile_and_load_routine()
     else
         echo "Failed to compile ${ROUTINE_NAME}. Loading process aborted."
     fi
+    echo ""
 }
 
 
@@ -156,6 +217,7 @@ function compile_and_load_routines()
     compile_and_load_routine $EXHANDLER_ROUTINE_DIR "exhandler routine" "load --exhandler ${EXHANDLER_ROUTINE_DIR_XSM}"
     compile_and_load_routine $TIMER_ROUTINE_DIR "timer routine" "load --int=timer ${TIMER_ROUTINE_DIR_XSM}"
     compile_and_load_routine $INT7_ROUTINE_DIR "int7 routine" "load --int=7 ${INT7_ROUTINE_DIR_XSM}"
+    compile_and_load_routine_expl $IDLE_ROUTINE_DIR "idle routine" "load --idle ${IDLE_ROUTINE_DIR_XSM}"
     echo ""
 }
 
@@ -204,6 +266,7 @@ function load_xsm_program_from_spl()
     else
         echo "The file: ${SPL_PROGRAMS_DIR}/${FILENAME} does not exists"
     fi
+    echo ""
 }
 
 
@@ -224,6 +287,7 @@ function load_xsm_program_from_expl()
     else
         echo "The file: ${EXPL_PROGRAMS_DIR}/${FILENAME} does not exists"
     fi
+    echo ""
 }
 
 function return_to_menu()
