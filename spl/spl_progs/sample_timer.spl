@@ -1,8 +1,42 @@
-[PROCESS_TABLE + ( [SYSTEM_STATUS_TABLE + 1] * 16) + 13] = SP;
-SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
+alias currentPID R0;
+alias processTableEntry R1;
+alias newPID R2;
+alias newProcessTableEntry R3;
+
+//Change stack and backup
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13] = SP;
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11]*512 - 1;
 backup;
-print [SYSTEM_STATUS_TABLE + 1];
-print "TIMER";
+
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+processTableEntry = PROCESS_TABLE + currentPID*16;
+[processTableEntry + 12] = SP%512;
+[processTableEntry + 14] = PTBR;
+[processTableEntry + 15] = PTLR;
+[processTableEntry + 4] = READY;
+
+if (currentPID == 0) then
+	newPID = 1;
+else 
+	newPID = 0;
+endif;
+
+
+newProcessTableEntry = PROCESS_TABLE + newPID*16;
+SP = [newProcessTableEntry + 11]*512 + [newProcessTableEntry + 12];
+PTBR = [newProcessTableEntry + 14];
+PTLR = [newProcessTableEntry + 15];
+[SYSTEM_STATUS_TABLE + 1] = newPID;
+
+if ([newProcessTableEntry + 4] == CREATED) then
+	[newProcessTableEntry + 4] = RUNNING;
+	SP = [newProcessTableEntry + 13];
+	ireturn;
+endif;
+
+[newProcessTableEntry + 4] = RUNNING;
 restore;
-SP = [PROCESS_TABLE + ( [SYSTEM_STATUS_TABLE + 1] * 16) + 13];
+
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 12] = SP%512;
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
 ireturn;
