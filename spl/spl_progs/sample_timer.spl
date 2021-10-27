@@ -1,4 +1,5 @@
 //Change stack and backup
+breakpoint;
 [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13] = SP;
 SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11]*512 - 1;
 backup;
@@ -37,6 +38,6 @@ endif;
 [newProcessTableEntry + 4] = RUNNING;
 restore;
 
-[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 12] = SP%512;
 SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
+breakpoint;
 ireturn;
